@@ -33,15 +33,48 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
       to: email,
       subject:
         emailType === "VERIFY" ? "Verify your email" : "Reset your password",
-      html: `<p>${
+      html: `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border-radius: 10px; background-color: #f9f9f9; color: #333;">
+    <h2 style="text-align: center; color: #0070f3;">
+      ${emailType === "VERIFY" ? "Verify Your Email" : "Reset Your Password"}
+    </h2>
+    <p style="font-size: 16px;">
+      ${
         emailType === "VERIFY"
-          ? "Please click the link below to verify your email address."
-          : "Please click the link below to reset your password."
-      }</p><a href="${
+          ? "Thank you for signing up! Please verify your email address by clicking the link below."
+          : "We received a request to reset your password. You can reset it by clicking the link below."
+      }
+    </p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${
         process.env.DOMAIN +
-        (emailType === "VERIFY" ? "/verify/" : "/reset/") +
+        (emailType === "VERIFY"
+          ? "/verifyemail?token="
+          : "/resetpassword?token=") +
         hashedToken
-      }">Click here</a>`,
+      }"
+        style="display: inline-block; padding: 12px 24px; font-size: 16px; color: white; background-color: #0070f3; border-radius: 6px; text-decoration: none;">
+        ${emailType === "VERIFY" ? "Verify Email" : "Reset Password"}
+      </a>
+    </div>
+    <p style="font-size: 14px;">
+      Or copy and paste the following link into your browser:
+    </p>
+    <p style="font-size: 14px; word-break: break-all; color: #555;">
+      ${
+        process.env.DOMAIN +
+        (emailType === "VERIFY"
+          ? "/verifyemail?token="
+          : "/resetpassword?token=") +
+        hashedToken
+      }
+    </p>
+    <hr style="margin: 30px 0;" />
+    <p style="font-size: 12px; text-align: center; color: #888;">
+      If you didn't request this, you can safely ignore this email.
+    </p>
+  </div>
+`,
     };
 
     const mailResponse = await transport.sendMail(mailOptions);
